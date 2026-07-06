@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bike Physics Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #d8e3f1;
+    --surface: #cdcdcd;
+    --surface-2: #acacad;
+    --line: #697179;
+    --text: #000000;
+    --muted: #000000;
+    --amber: #2aa14d;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:48px 24px 100px;}
+
+  nav{display:flex;gap:20px;margin-bottom:36px;font-family:'JetBrains Mono',monospace;font-size:13px;}
+  nav a{color:var(--muted);text-decoration:none;padding:8px 0;border-bottom:2px solid transparent;}
+  nav a.active{color:var(--text);border-bottom-color:var(--amber);}
+  nav a:hover{color:var(--text);}
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:800;
+    font-size:clamp(28px,5vw,44px);
+    line-height:1.1;
+    margin:0 0 10px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 36px;max-width:60ch;}
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px;
+    margin-bottom:28px;
+  }
+  .panel h2{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--muted);
+    margin:0 0 22px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .panel h2::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:26px;}
+  @media (max-width:560px){.controls{grid-template-columns:1fr;}}
+  .field label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:13px;color:var(--muted);margin-bottom:8px;
+  }
+  .field label b{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--text);
+    font-size:16px;
+    font-weight:600;
+  }
+  input[type=range]{
+    -webkit-appearance:none;width:100%;height:6px;border-radius:3px;
+    background:var(--surface-2);outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--amber);cursor:pointer;border:3px solid var(--bg);
+    box-shadow:0 0 0 1px var(--amber);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:18px;height:18px;border-radius:50%;background:var(--amber);
+    cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--amber);
+  }
+  .field-row{display:flex;gap:16px;flex-wrap:wrap;}
+  .field-row .field{flex:1;min-width:140px;}
+  input[type=number], select{
+    width:100%;background:var(--surface-2);border:1px solid var(--line);
+    color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;
+    padding:9px 10px;border-radius:8px;
+  }
+  /* make the rider/bike weight and CdA inputs match the Alpe page (white, mono font) */
+  #Rmass, #Bmass, #cda{
+    background:#ffffff;color:var(--text);border:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:15px;padding:9px 10px;border-radius:8px;
+  }
+  input[type=number]:focus, input[type=range]:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+
+  .readout{
+    display:flex;align-items:flex-end;gap:36px;flex-wrap:wrap;
+    border-top:1px solid var(--line);padding-top:24px;margin-bottom:24px;
+  }
+  .stat .num{
+    font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:clamp(32px,7vw,52px);color:var(--amber);line-height:1;
+  }
+  .stat .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px;}
+  .stat.secondary .num{color:var(--text);font-size:clamp(22px,4vw,30px);}
+
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.7;}
+  footer code{color:var(--text);font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="calculator.html" class="active">Flat &amp; gradient</a>
+    <a href="alpe-dhuez.html">Alpe d'Huez</a>
+  </nav>
+
+  <p class="eyebrow">Wattage → Speed</p>
+  <h1>Bike Physics Calculator</h1>
+  <p class="sub">A small physics model accounting for drag, rolling resistance, gravity, and wind. Move the sliders to see your speed update live.</p>
+
+  <div class="panel">
+    <h2>Flat &amp; gradient calculator</h2>
+
+    <div class="readout">
+      <div class="stat">
+        <div class="num" id="kphOut">—</div>
+        <div class="label">km/h</div>
+      </div>
+      <div class="stat secondary">
+        <div class="num" id="mphOut">—</div>
+        <div class="label">mph</div>
+      </div>
+      <div class="stat secondary">
+        <div class="num" id="wkgOut">—</div>
+        <div class="label">watts / kg</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="field">
+        <label>Power <b id="wattsVal">250</b> W</label>
+        <input type="range" id="watts" min="0" max="1200" step="5" value="235">
+      </div>
+      <div class="field">
+        <label>Gradient <b id="gradVal">0.0</b> %</label>
+        <input type="range" id="grad" min="-15" max="15" step="0.5" value="0">
+      </div>
+      <div class="field">
+        <label>Wind <b id="windVal">0</b> km/h</label>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+          <select id="windDirSelect" style="flex:0 0 110px;width:110px;padding:6px 8px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);font-family:JetBrains Mono,monospace;color:var(--muted)">
+            <option value="Headwind">Headwind</option>
+            <option value="Tailwind">Tailwind</option>
+          </select>
+          <input type="range" id="wind" min="0" max="50" step="1" value="0" style="flex:1;margin-left:8px;min-width:0;width:100%;">
+        </div>
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-bottom:26px;">
+      <div class="field">
+        <label>Rider weight (kg)</label>
+        <input type="number" id="Rmass" value="82" min="1" max="499" step="0.1">
+      </div>
+      <div class="field">
+        <label>CdA</label>
+        <input type="number" id="cda" value="0.35" min="0" max="1" step="0.05">
+      </div>
+      <div class="field">
+        <label>Bike weight (kg)</label>
+        <input type="number" id="Bmass" value="8" min="1" max="99" step="0.1">
+      </div>
+      <div class="field">
+        <label>Ambient temp (°C)</label>
+        <input type="number" id="tempC" value="15" min="-30" max="50" step="0.5" style="background:#ffffff;border:1px solid var(--line);">
+      </div>
+    </div>
+    <div style="margin-bottom:12px;color:var(--muted)">Air density: <b id="rhoReadout">1.225</b> kg/m³</div>
+    <div class="field-row" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Tire type</label>
+        <select id="tireType">
+          <option value="road">Road (Crr 0.005)</option>
+          <option value="gravel">Gravel (Crr 0.010)</option>
+          <option value="mtb">MTB (Crr 0.015)</option>
+          <option value="tt">TT (Crr 0.004)</option>
+          <option value="custom">Custom RR</option>
+        </select>
+      </div>
+      <div class="field" id="customRRField">
+        <label>Custom Crr</label>
+        <input type="number" id="customRR" value="0.005" min="0" step="0.0001">
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Model: <code>power = (½·ρ·CdA·v² + Crr·m·g + m·g·gradient) · v</code>, with wind added to the drag term.
+  </footer>
+
+</div>
+
+<script>
+// compute air density from ambient temperature (°C)
+function getAirDensity(){
+  const tEl = document.getElementById('tempC');
+  const t = tEl ? parseFloat(tEl.value) : 15;
+  if(!isFinite(t)) return 1.225;
+  // ideal gas law approximation at standard pressure (101325 Pa)
+  return 101325 / (287.05 * (t + 273.15));
+}
+const RR = 0.005;
+const GRAVITY = 9.8;
+
+function powerNeeded(speed, gradient, mass, CdA, windMs = 0, rr = RR){
+  const relAir = speed + windMs;
+  const rho = getAirDensity();
+  const drag = 0.5 * rho * CdA * relAir * relAir;
+  const rolling = rr * mass * GRAVITY;
+  const gravityForce = mass * GRAVITY * gradient;
+  return (drag + rolling + gravityForce) * speed;
+}
+
+function speedForPower(watts, gradient, mass, CdA, windMs = 0, rr = RR){
+  let lo = 0, hi = 35;
+  for(let i=0;i<60;i++){
+    const mid = (lo+hi)/2;
+    if(powerNeeded(mid, gradient, mass, CdA, windMs, rr) < watts) lo = mid; else hi = mid;
+  }
+  return (lo+hi)/2;
+}
+
+const wattsEl = document.getElementById('watts');
+const gradEl = document.getElementById('grad');
+const RmassEl = document.getElementById('Rmass');
+const BmassEl = document.getElementById('Bmass');
+const cdaEl = document.getElementById('cda');
+const tempEl = document.getElementById('tempC');
+const windEl = document.getElementById('wind');
+const windDirSelect = document.getElementById('windDirSelect');
+const tireTypeEl = document.getElementById('tireType');
+const customRREl = document.getElementById('customRR');
+const customRRField = document.getElementById('customRRField');
+
+function updateTireUI(){
+  const t = tireTypeEl && tireTypeEl.value ? tireTypeEl.value : 'road';
+  if(customRRField){
+    if(t === 'custom'){
+      customRRField.style.display = '';
+      customRREl.disabled = false;
+    } else {
+      customRRField.style.display = 'none';
+      customRREl.disabled = true;
+    }
+  }
+}
+
+function updateFlat(){
+  const watts = parseFloat(wattsEl.value);
+  const gradPct = parseFloat(gradEl.value);
+  const rider = parseFloat(RmassEl.value) || 0;
+  const bike = parseFloat(BmassEl.value) || 0;
+  const mass = (rider + bike) || 90;
+  const CdA = parseFloat(cdaEl.value) || 0.35;
+
+  document.getElementById('wattsVal').textContent = watts;
+  document.getElementById('gradVal').textContent = gradPct.toFixed(1);
+  const wind = parseFloat(windEl.value) || 0;
+  document.getElementById('windVal').textContent = wind;
+  const windDir = windDirSelect.value;
+  const windMs = (windDir === 'Headwind' ? wind : -wind) / 3.6;
+
+  // determine rolling resistance from tire selection
+  let rr = RR;
+  const t = (tireTypeEl && tireTypeEl.value) ? tireTypeEl.value : 'road';
+  if(t === 'road') rr = 0.005;
+  else if(t === 'gravel') rr = 0.01;
+  else if(t === 'mtb') rr = 0.015;
+  else if(t === 'tt') rr = 0.004;
+  else if(t === 'custom') rr = parseFloat(customRREl.value) || RR;
+
+  const speed = speedForPower(watts, gradPct/100, mass, CdA, windMs, rr);
+  const kph = speed * 3.6;
+  const mph = speed * 2.237;
+
+  if(!isFinite(kph)){
+    document.getElementById('kphOut').textContent = '—';
+    document.getElementById('mphOut').textContent = '—';
+  } else {
+    document.getElementById('kphOut').textContent = kph.toFixed(1);
+    document.getElementById('mphOut').textContent = mph.toFixed(1);
+  }
+  document.getElementById('wkgOut').textContent = (rider > 0 && isFinite(watts/rider)) ? (watts/rider).toFixed(2) : '—';
+}
+// wire inputs
+[wattsEl, gradEl, RmassEl, BmassEl, cdaEl, windEl, customRREl, tempEl].forEach(el =>
+  el && el.addEventListener('input', updateFlat)
+);
+if(tireTypeEl){
+  tireTypeEl.addEventListener('change', () => { updateTireUI(); updateFlat(); });
+  tireTypeEl.addEventListener('input', () => { updateTireUI(); updateFlat(); });
+}
+
+// initialize tire UI
+updateTireUI();
+windDirSelect.addEventListener('change', updateFlat);
+windDirSelect.addEventListener('input', updateFlat);
+updateFlat();
+// update displayed air density whenever UI changes
+function updateDensityDisplay(){
+  const rhoEl = document.getElementById('rhoReadout');
+  if(rhoEl) rhoEl.textContent = getAirDensity().toFixed(3);
+}
+updateDensityDisplay();
+
+// also refresh density on temp changes
+if(tempEl) tempEl.addEventListener('input', () => { updateDensityDisplay(); });
+</script>
+</body>
+</html>

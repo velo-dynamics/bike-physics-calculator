@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpe d'Huez — Bike Physics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #d8e3f1;
+    --surface: #cdcdcd;
+    --surface-2: #747577;
+    --line: #3a424c;
+    --text: #000000;
+    --muted: #151616;
+    --amber: #2aa14d;
+    --g-easy: #6fcf97;
+    --g-mod: #f2c94c;
+    --g-steep: #f2994a;
+    --g-savage: #eb5757;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 24px 100px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;margin-bottom:28px}
+  .panel h2{font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 22px;display:flex;align-items:center;gap:10px}
+  .panel h2::after{content:"";flex:1;height:1px;background:var(--line)}
+  .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted);margin-bottom:8px}
+  .field label b{font-family:'JetBrains Mono',monospace;color:var(--text);font-size:16px;font-weight:600}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:var(--surface-2);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--amber);cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--amber)}
+  .profile{display:flex;align-items:flex-end;gap:2px;height:130px;margin-bottom:6px}
+  .field-row{display:flex;gap:16px;flex-wrap:wrap}
+  .field-row .field{flex:1;min-width:140px}
+  input[type=number], select{
+    width:100%;background:#ffffff;border:1px solid var(--line);
+    color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;
+    padding:9px 10px;border-radius:8px;
+  }
+  .seg{flex:1;border-radius:3px 3px 0 0;position:relative;cursor:pointer;transition:opacity .15s;min-width:4px}
+  .seg:hover{opacity:.75}
+  .seg .tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap;margin-bottom:8px;z-index:2;color:var(--text)}
+  .seg:hover .tip{display:block}
+  .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:22px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:24px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+  .climb-readout{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:24px}
+  .stat .num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(32px,7vw,52px);color:var(--amber);line-height:1}
+  .stat.secondary .num{color:var(--text);font-size:clamp(20px,3vw,28px)}
+  .stat .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+  .stat.secondary .label{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav style="margin-bottom:18px;font-family:JetBrains Mono,monospace;font-size:13px">
+    <a href="calculator.html">← Back to calculator</a>
+  </nav>
+  <h1>Alpe d'Huez — Hairpin by hairpin</h1>
+  <div class="panel">
+    <h2>Alpe d'Huez, hairpin by hairpin</h2>
+    <div class="field" style="max-width:320px;margin-bottom:22px;">
+      <label>Sustained power <b id="climbWattsVal">250</b> W</label>
+      <input type="range" id="climbWatts" min="100" max="450" step="5" value="250">
+    </div>
+    <div class="field-row" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Rider weight (kg)</label>
+        <input type="number" id="Rmass" value="82" min="1" max="499" step="0.01">
+      </div>
+      <div class="field">
+        <label>CdA</label>
+        <input type="number" id="cda" value="0.35" min="0" max="1" step="0.001">
+      </div>
+      <div class="field">
+        <label>Bike weight (kg)</label>
+        <input type="number" id="Bmass" value="8" min="1" max="99" step="0.01">
+      </div>
+      <div class="field">
+        <label>Ambient temp (°C)</label>
+        <input type="number" id="tempC" value="15" min="-30" max="50" step="0.5">
+      </div>
+    </div>
+    <div style="margin-bottom:12px;color:var(--muted)">Air density: <b id="rhoVal">1.225</b> kg/m³</div>
+    <div class="field-row" style="margin-bottom:18px;">
+      <div class="field">
+        <label>Tire type</label>
+        <select id="tireType">
+          <option value="road">Road (Crr 0.005)</option>
+          <option value="gravel">Gravel (Crr 0.010)</option>
+          <option value="mtb">MTB (Crr 0.015)</option>
+          <option value="tt">TT (Crr 0.004)</option>
+          <option value="custom">Custom RR</option>
+        </select>
+      </div>
+      <div class="field" id="customRRField">
+        <label>Custom Crr</label>
+        <input type="number" id="customRR" value="0.005" min="0" step="0.0001">
+      </div>
+    </div>
+    <div class="profile" id="profile"></div>
+    <div class="axis"><span>0 km</span><span>13.8 km</span></div>
+    <div class="legend">
+      <span><i style="background:var(--g-easy)"></i>&lt; 6%</span>
+      <span><i style="background:var(--g-mod)"></i>6–8%</span>
+      <span><i style="background:var(--g-steep)"></i>8–10%</span>
+      <span><i style="background:var(--g-savage)"></i>&gt; 10%</span>
+    </div>
+    <div class="climb-readout">
+      <div class="stat">
+        <div class="num" id="climbTime">—</div>
+        <div class="label">estimated time</div>
+      </div>
+      <div class="stat secondary">
+        <div class="num" id="climbAvgSpeed">—</div>
+        <div class="label">avg. km/h</div>
+      </div>
+      <div class="stat secondary">
+        <div class="num" id="climbWkg">—</div>
+        <div class="label">watts / kg</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// compute air density from ambient temperature (°C)
+function getAirDensity(){
+  const tEl = document.getElementById('tempC');
+  const t = tEl ? parseFloat(tEl.value) : 15;
+  if(!isFinite(t)) return 1.225;
+  return 101325 / (287.05 * (t + 273.15));
+}
+const RR = 0.005;
+const GRAVITY = 9.8;
+
+function powerNeeded(speed, gradient, mass, CdA, windMs = 0, rr = RR){
+  const relAir = speed + windMs;
+  const rho = getAirDensity();
+  const drag = 0.5 * rho * CdA * relAir * relAir;
+  const rolling = rr * mass * GRAVITY;
+  const gravityForce = mass * GRAVITY * gradient;
+  return (drag + rolling + gravityForce) * speed;
+}
+
+function speedForPower(watts, gradient, mass, CdA, windMs = 0, rr = RR){
+  let lo = 0, hi = 35;
+  for(let i=0;i<60;i++){
+    const mid = (lo+hi)/2;
+    if(powerNeeded(mid, gradient, mass, CdA, windMs, rr) < watts) lo = mid; else hi = mid;
+  }
+  return (lo+hi)/2;
+}
+
+const segments = [
+  [0.0, 0.9, 11.0], [0.9, 1.7, 10.5], [1.7, 2.6, 9.0], [2.6, 3.4, 8.0],
+  [3.4, 4.2, 7.9], [4.2, 5.0, 7.8], [5.0, 5.9, 7.5], [5.9, 6.6, 7.9],
+  [6.6, 7.4, 7.4], [7.4, 8.3, 7.9], [8.3, 9.1, 8.5], [9.1, 10.0, 10.0],
+  [10.0, 10.8, 9.0], [10.8, 11.6, 5.0], [11.6, 12.4, 5.0], [12.4, 13.2, 4.1],
+  [13.2, 13.8, 2.0]
+];
+
+function gradeColor(pct){
+  if(pct < 6) return 'var(--g-easy)';
+  if(pct < 8) return 'var(--g-mod)';
+  if(pct < 10) return 'var(--g-steep)';
+  return 'var(--g-savage)';
+}
+
+const profileEl = document.getElementById('profile');
+segments.forEach((seg) => {
+  const [start, end, pct] = seg;
+  const bar = document.createElement('div');
+  bar.className = 'seg';
+  bar.style.height = (30 + pct*7) + 'px';
+  bar.style.background = gradeColor(pct);
+  const tip = document.createElement('div');
+  tip.className = 'tip';
+  bar.appendChild(tip);
+  bar._start = start; bar._end = end; bar._pct = pct; bar._tip = tip;
+  profileEl.appendChild(bar);
+});
+  const customRRField = document.getElementById('customRRField');
+
+  function updateTireUI(){
+    const t = tireTypeEl && tireTypeEl.value ? tireTypeEl.value : 'road';
+    if(customRRField){
+      if(t === 'custom'){
+        customRRField.style.display = '';
+        customRREl.disabled = false;
+      } else {
+        customRRField.style.display = 'none';
+        customRREl.disabled = true;
+      }
+    }
+  }
+const climbWattsEl = document.getElementById('climbWatts');
+const RmassEl = document.getElementById('Rmass');
+const BmassEl = document.getElementById('Bmass');
+const cdaEl = document.getElementById('cda');
+const tireTypeEl = document.getElementById('tireType');
+const customRREl = document.getElementById('customRR');
+
+function updateClimb(){
+  const watts = parseFloat(climbWattsEl.value);
+  const rider = parseFloat(RmassEl.value) || 0;
+  const bike = parseFloat(BmassEl.value) || 0;
+  const mass = (rider + bike) || 90;
+  const CdA = parseFloat(cdaEl.value) || 0.35;
+  document.getElementById('climbWattsVal').textContent = watts;
+
+  let totalTimeHours = 0;
+  const bars = profileEl.children;
+  for(let i=0;i<segments.length;i++){
+    const [start, end, pct] = segments[i];
+    const dist = end - start;
+    // rolling resistance based on tire selection
+    let rr = RR;
+    const t = (tireTypeEl && tireTypeEl.value) ? tireTypeEl.value : 'road';
+    if(t === 'road') rr = 0.005;
+    else if(t === 'gravel') rr = 0.01;
+    else if(t === 'mtb') rr = 0.015;
+    else if(t === 'tt') rr = 0.004;
+    else if(t === 'custom') rr = parseFloat(customRREl.value) || RR;
+
+    const speed = speedForPower(watts, pct/100, mass, CdA, 0, rr);
+    const kph = speed * 3.6;
+    if(!isFinite(kph) || kph <= 0.0001){
+      bars[i]._tip.textContent = `${pct.toFixed(1)}%  ·  — km/h`;
+      totalTimeHours = Infinity;
+      break;
+    } else {
+      const t = dist / kph;
+      totalTimeHours += t;
+      bars[i]._tip.textContent = `${pct.toFixed(1)}%  ·  ${kph.toFixed(1)} km/h`;
+    }
+  }
+  if(!isFinite(totalTimeHours) || totalTimeHours <= 0){
+    document.getElementById('climbTime').textContent = '—';
+    document.getElementById('climbAvgSpeed').textContent = '—';
+    document.getElementById('climbWkg').textContent = '—';
+  } else {
+    const wholeHours = Math.floor(totalTimeHours);
+    const leftoverMin = (totalTimeHours - wholeHours) * 60;
+    const wholeMin = Math.floor(leftoverMin);
+    const wholeSec = Math.round((leftoverMin - wholeMin) * 60);
+
+    let timeStr = '';
+    if(wholeHours > 0) timeStr += wholeHours + 'h ';
+    timeStr += wholeMin + 'm ' + wholeSec + 's';
+    document.getElementById('climbTime').textContent = timeStr;
+    document.getElementById('climbAvgSpeed').textContent = (13.8/totalTimeHours).toFixed(1);
+    document.getElementById('climbWkg').textContent = rider > 0 ? (watts / rider).toFixed(2) : '—';
+  }
+}
+  const tempEl = document.getElementById('tempC');
+  tireTypeEl.addEventListener('input', () => { updateTireUI(); updateClimb(); });
+  tireTypeEl.addEventListener('change', () => { updateTireUI(); updateClimb(); });
+  climbWattsEl.addEventListener('input', updateClimb);
+  RmassEl.addEventListener('input', updateClimb);
+  BmassEl.addEventListener('input', updateClimb);
+  cdaEl.addEventListener('input', updateClimb);
+  tireTypeEl.addEventListener('input', updateClimb);
+  customRREl.addEventListener('input', updateClimb);
+  if(tempEl) tempEl.addEventListener('input', () => { document.getElementById('rhoVal').textContent = getAirDensity().toFixed(3); updateClimb(); });
+  updateTireUI();
+  document.getElementById('rhoVal').textContent = getAirDensity().toFixed(3);
+  updateClimb();
+</script>
+</body>
+</html>
