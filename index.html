@@ -56,7 +56,7 @@
   h1{
     font-family:'JetBrains Mono',monospace;
     font-weight:800;
-    font-size:clamp(28px,5vw,44px);
+    font-size:clamp(58px,5vw,44px);
     line-height:1.1;
     margin:0 0 10px;
     letter-spacing:-0.01em;
@@ -81,7 +81,64 @@
     align-items:center;
     gap:10px;
   }
-  .panel h2::after{content:"";flex:1;height:1px;background:var(--line);}
+  .panel h2::after{content:"";flex:1;height:1px;background:var(--line);} 
+  .section-grid{
+    display:grid;
+    gap:22px;
+  }
+  .section{
+    padding:22px 0 0;
+    border-top:1px solid var(--line);
+  }
+  .section:first-of-type{border-top:none;padding-top:0;}
+  .section h3{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    color:var(--muted);
+    margin:0 0 18px;
+  }
+  .section .controls{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:760px){.section .controls{grid-template-columns:1fr;}}
+
+  body.dark-theme{
+    --bg: #0f1722;
+    --surface: #182332;
+    --surface-2: #253447;
+    --line: #4a5a6b;
+    --text: #f3f7fb;
+    --muted: #d7e2ee;
+    --amber: #5bd98f;
+  }
+
+  body.dark-theme #Rmass,
+  body.dark-theme #Bmass,
+  body.dark-theme #altitudeM,
+  body.dark-theme #tempC,
+  body.dark-theme #customCda,
+  body.dark-theme #customRR{
+    background:#f8fafc;
+    color:#111827;
+    border-color:var(--line);
+  }
+
+  .theme-toggle{
+    margin-top:24px;
+    display:flex;
+    justify-content:center;
+  }
+  .theme-toggle button{
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    padding:10px 14px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .theme-toggle button:hover{opacity:0.9;}
 
   .controls{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:26px;}
   @media (max-width:560px){.controls{grid-template-columns:1fr;}}
@@ -109,16 +166,241 @@
     cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--amber);
   }
   .field-row{display:flex;gap:16px;flex-wrap:wrap;}
+  .field-row.bike-aero-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .field-row.bike-aero-grid .field{margin:0;}
+  @media (max-width:760px){.field-row.bike-aero-grid{grid-template-columns:1fr;}}
   .field-row .field{flex:1;min-width:140px;}
   input[type=number], select{
-    width:100%;background:var(--surface-2);border:1px solid var(--line);
+    width:100%;background:#ffffff;border:1px solid var(--line);
     color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;
     padding:9px 10px;border-radius:8px;
   }
-  /* make the rider/bike weight and CdA inputs match the Alpe page (white, mono font) */
-  #Rmass, #Bmass, #cda{
+  #cda, #tireType{
     background:#ffffff;color:var(--text);border:1px solid var(--line);
     font-family:'JetBrains Mono',monospace;font-size:15px;padding:9px 10px;border-radius:8px;
+  }
+  .wind-speed-input input{
+    width:100%;
+    max-width:120px;
+    padding:9px 10px;
+    background:#ffffff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:15px;
+  }
+  .wind-direction-field{
+    display:grid;
+    grid-template-columns:minmax(240px,1fr) minmax(220px,1fr);
+    gap:18px 22px;
+    align-items:start;
+    justify-items:start;
+    max-width:660px;
+    width:100%;
+  }
+  .wind-direction-field label{
+    grid-column:1 / -1;
+    justify-self:start;
+  }
+  .wind-left{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:100%;
+  }
+  .wind-right{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:100%;
+  }
+  .wind-environment{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .wind-angle-control{
+    position:relative;
+    width:130px;
+    height:130px;
+    border:2px solid var(--line);
+    border-radius:50%;
+    margin-top:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.02);
+  }
+  .wind-angle-control::before{
+    content:'';
+    position:absolute;
+    inset:12px;
+    border:1px dashed var(--line);
+    border-radius:50%;
+  }
+  .wind-angle-control .bike-icon{
+    width:56px;
+    height:84px;
+  }
+  .wind-speed-box{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    gap:6px;
+    margin-top:0;
+  }
+  .wind-speed-input{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .wind-speed-input input{
+    width:100%;
+    max-width:120px;
+    padding:9px 10px;
+    background:#ffffff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:15px;
+  }
+  .wind-speed-input span{
+    color:var(--muted);
+    font-size:14px;
+    white-space:nowrap;
+  }
+  .vertical-range{
+    -webkit-appearance:none;
+    appearance:none;
+    width:340px;
+    height:32px;
+    padding:0;
+    margin:0 auto;
+    background:transparent;
+  }
+  .vertical-range::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:var(--amber);
+    border:3px solid var(--bg);
+    box-shadow:0 0 0 1px var(--amber);
+    cursor:pointer;
+    margin-top:0;
+  }
+  .vertical-range::-moz-range-thumb{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:var(--amber);
+    border:3px solid var(--bg);
+    cursor:pointer;
+  }
+  .vertical-range::-webkit-slider-runnable-track{
+    width:100%;
+    height:16px;
+    border-radius:999px;
+    background:var(--surface-2);
+    margin:0 auto;
+  }
+  .vertical-range::-moz-range-track{
+    width:100%;
+    height:16px;
+    border-radius:999px;
+    background:var(--surface-2);
+    margin:0 auto;
+  }
+  .wind-info-block{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:0;
+  }
+  .math-panel{
+    background:rgba(255,255,255,0.9);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px 22px;
+    margin-top:28px;
+  }
+  .math-panel h3{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--muted);
+    margin:0 0 14px;
+  }
+  .math-panel p{
+    margin:0 0 12px;
+    color:var(--text);
+    line-height:1.5;
+    font-size:14px;
+  }
+  .formula{
+    font-family:'JetBrains Mono',monospace;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px;
+    color:var(--text);
+    overflow-x:auto;
+    font-size:14px;
+    line-height:1.6;
+    margin-bottom:12px;
+  }
+  .formula code{
+    display:block;
+    white-space:pre;
+  }
+  .math-panel strong{color:var(--text);}
+  .bike-icon{
+    position:relative;
+    width:40px;
+    height:60px;
+  }
+  .bike-icon::before,
+  .bike-icon::after{
+    content:'';
+    position:absolute;
+    background:var(--line);
+    border-radius:999px;
+  }
+  .bike-icon::before{
+    width:4px;
+    height:100%;
+    left:50%;
+    transform:translateX(-50%);
+    top:0;
+  }
+  .bike-icon::after{
+    width:100%;
+    height:4px;
+    top:50%;
+    left:0;
+    transform:translateY(-50%);
+  }
+  .wind-arrow{
+    position:absolute;
+    width:2px;
+    height:48px;
+    background:var(--amber);
+    bottom:50%;
+    left:50%;
+    transform-origin:bottom center;
+    transform:translateX(-50%) rotate(0deg);
+    border-radius:1px;
+  }
+  .wind-angle-info{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:10px;
+    line-height:1.4;
+    text-align:center;
+    max-width:140px;
   }
   input[type=number]:focus, input[type=range]:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
 
@@ -141,11 +423,11 @@
 <div class="wrap">
 
   <nav>
-    <a href="calculator.html" class="active">Flat &amp; gradient</a>
+    <a href="index.html" class="active">Flat &amp; gradient</a>
     <a href="alpe-dhuez.html">Alpe d'Huez</a>
   </nav>
 
-  <p class="eyebrow">Wattage → Speed</p>
+  
   <h1>Bike Physics Calculator</h1>
   <p class="sub">A small physics model accounting for drag, rolling resistance, gravity, and wind. Move the sliders to see your speed update live.</p>
 
@@ -167,84 +449,199 @@
       </div>
     </div>
 
-    <div class="controls">
-      <div class="field">
-        <label>Power <b id="wattsVal">250</b> W</label>
-        <input type="range" id="watts" min="0" max="1200" step="5" value="235">
-      </div>
-      <div class="field">
-        <label>Gradient <b id="gradVal">0.0</b> %</label>
-        <input type="range" id="grad" min="-15" max="15" step="0.5" value="0">
-      </div>
-      <div class="field">
-        <label>Wind <b id="windVal">0</b> km/h</label>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-          <select id="windDirSelect" style="flex:0 0 110px;width:110px;padding:6px 8px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);font-family:JetBrains Mono,monospace;color:var(--muted)">
-            <option value="Headwind">Headwind</option>
-            <option value="Tailwind">Tailwind</option>
-          </select>
-          <input type="range" id="wind" min="0" max="50" step="1" value="0" style="flex:1;margin-left:8px;min-width:0;width:100%;">
+    <div class="section-grid">
+      <section class="section">
+        <h3>Power & grade</h3>
+        <div class="controls">
+          <div class="field">
+            <label>Power <b id="wattsVal">250</b> W</label>
+            <input type="range" id="watts" min="0" max="1200" step="5" value="200">
+          </div>
+          <div class="field">
+            <label>Gradient <b id="gradVal">0.0</b> %</label>
+            <input type="range" id="grad" min="-15" max="15" step="0.1" value="0">
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <div class="field-row" style="margin-bottom:26px;">
-      <div class="field">
-        <label>Rider weight (kg)</label>
-        <input type="number" id="Rmass" value="82" min="1" max="499" step="0.1">
-      </div>
-      <div class="field">
-        <label>CdA</label>
-        <input type="number" id="cda" value="0.35" min="0" max="1" step="0.05">
-      </div>
-      <div class="field">
-        <label>Bike weight (kg)</label>
-        <input type="number" id="Bmass" value="8" min="1" max="99" step="0.1">
-      </div>
-      <div class="field">
-        <label>Ambient temp (°C)</label>
-        <input type="number" id="tempC" value="15" min="-30" max="50" step="0.5" style="background:#ffffff;border:1px solid var(--line);">
-      </div>
-    </div>
-    <div style="margin-bottom:12px;color:var(--muted)">Air density: <b id="rhoReadout">1.225</b> kg/m³</div>
-    <div class="field-row" style="margin-bottom:18px;">
-      <div class="field">
-        <label>Tire type</label>
-        <select id="tireType">
-          <option value="road">Road (Crr 0.005)</option>
-          <option value="gravel">Gravel (Crr 0.010)</option>
-          <option value="mtb">MTB (Crr 0.015)</option>
-          <option value="tt">TT (Crr 0.004)</option>
-          <option value="custom">Custom RR</option>
-        </select>
-      </div>
-      <div class="field" id="customRRField">
-        <label>Custom Crr</label>
-        <input type="number" id="customRR" value="0.005" min="0" step="0.0001">
-      </div>
+      <section class="section">
+        <h3>Wind</h3>
+        <div class="wind-direction-field">
+          <label>Wind direction <b id="windAngleVal">0° headwind</b></label>
+          <div class="wind-left">
+            <div class="wind-angle-control">
+              <div class="wind-arrow" id="windArrow"></div>
+              <div class="bike-icon"></div>
+            </div>
+            <input class="vertical-range" type="range" id="windAngle" min="0" max="180" step="1" value="0">
+            <div class="wind-angle-info" style="margin-top:6px;">0° = headwind, 90° = crosswind, 180° = tailwind.</div>
+          </div>
+          <div class="wind-right">
+            <div class="wind-info-block">
+              <label>Wind speed <b id="windVal">0</b> <span id="windValUnit">km/h</span></label>
+              <div class="wind-speed-input">
+                <input type="number" id="wind" min="0" max="50" step="1" value="0">
+                <span>km/h</span>
+              </div>
+            </div>
+            <div class="wind-environment">
+              <div class="field">
+                <label>Altitude (m)</label>
+                <input type="number" id="altitudeM" value="0" min="-500" max="5000" step="50">
+              </div>
+              <div class="field">
+                <label>Ambient temp (°C)</label>
+                <input type="number" id="tempC" value="15" min="-30" max="50" step="5" style="background:#ffffff;border:1px solid var(--line);">
+              </div>
+            </div>
+            <div style="margin-top:4px;color:var(--muted)">Air density: <b id="rhoReadout">1.225</b> <span id="rhoUnit">kg/m³</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Mass</h3>
+        <div class="field-row" style="margin-bottom:16px;">
+          <div class="field">
+            <label>Rider weight (kg)</label>
+            <input type="number" id="Rmass" value="82" min="1" max="499" step="1">
+          </div>
+          <div class="field">
+            <label>Bike weight (kg)</label>
+            <input type="number" id="Bmass" value="8" min="1" max="99" step="1">
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Bike & aero</h3>
+        <div class="field-row bike-aero-grid">
+          <div class="field">
+            <label>Drivetrain efficiency</label>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <input type="number" id="efficiency" value="97" min="70" max="100" step="1" style="flex:1;">
+              <span style="font-family:'JetBrains Mono',monospace;color:var(--text);">%</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Tire type</label>
+            <select id="tireType">
+              <option value="tt">TT (Crr 0.0025)</option>
+              <option value="road" selected>Road (Crr 0.0038)</option>
+              <option value="gravel">Gravel (Crr 0.0050)</option>
+              <option value="mtb">MTB (Crr 0.0068)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Road surface</label>
+            <select id="roadType">
+              <option value="0.85" selected>Pristine Asphalt</option>
+              <option value="1.00">Good Asphalt</option>
+              <option value="1.15">Aged Asphalt</option>
+              <option value="1.4">Coarse Chip-Seal</option>
+              <option value="1.8">Broken Road/Cobbles</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>CdA</label>
+            <select id="cda">
+              <option value="0.30">Drops (0.30)</option>
+              <option value="0.32" selected>Hoods (0.32)</option>
+              <option value="0.40">Flats (0.40)</option>
+              <option value="0.22">TT bars (0.22)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row bike-aero-grid" style="margin-top:18px;">
+          <div class="field" id="customRRField" style="display:none;">
+            <label>Custom Crr</label>
+            <input type="number" id="customRR" value="0.005" min="0" step="0.0001">
+          </div>
+          <div class="field" id="customCdaField" style="display:none;">
+            <label>Custom CdA</label>
+            <input type="number" id="customCda" value="0.35" min="0" max="1" step="0.001">
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
-  <footer>
-    Model: <code>power = (½·ρ·CdA·v² + Crr·m·g + m·g·gradient) · v</code>, with wind added to the drag term.
-  </footer>
+  <div class="math-panel">
+    <h3>Model details</h3>
+    <p><strong>Air density</strong> is computed from temperature and altitude:</p>
+    <div class="formula"><code>rho = p / (R * T)
+p = 101325 * exp(-altitude / 8500)
+T = tempC + 273.15</code></div>
+
+    <p><strong>Wind</strong> is treated as a relative airspeed vector:</p>
+    <div class="formula"><code>V_rel_x = speed + windSpeed * cos(windAngle)
+V_rel_y = windSpeed * sin(windAngle)
+V_rel = sqrt(V_rel_x^2 + V_rel_y^2)</code></div>
+
+    <p><strong>Drag force</strong> uses the effective airspeed:</p>
+    <div class="formula"><code>F_drag = 0.5 * rho * CdA * V_rel^2</code></div>
+
+    <p><strong>Rolling resistance</strong> is proportional to weight. The effective rolling resistance coefficient
+    depends on both the tire choice and the road surface. We compute an effective coefficient as:</p>
+    <div class="formula"><code>Crr_effective = Crr_tire * road_factor
+      
+Road Factor Multiplier:
+road_factor (Pristine Asphalt)    = 0.85
+road_factor (Good Asphalt)        = 1.00
+road_factor (Aged Asphalt)        = 1.15
+road_factor (Coarse Chip-Seal)    = 1.40 
+road_factor (Broken Road/Cobbles) = 1.80</code></div>
+
+    <p>With the effective coefficient the rolling force becomes:</p>
+    <div class="formula"><code>F_rr = Crr_effective * mass * g
+      = (Crr_tire * road_factor) * mass * g</code></div>
+
+    <p><strong>Gravity force</strong> uses the gradient as a slope fraction:</p>
+    <div class="formula"><code>F_gravity = mass * g * gradient</code></div>
+
+    <p><strong>Total power</strong> is the sum of forces times speed, adjusted for drivetrain efficiency:</p>
+    <div class="formula"><code>P = (F_drag + F_rr + F_gravity) * speed / (efficiency / 100)</code></div>
+
+    <p>This calculator solves for <strong>speed</strong> given power, mass, CdA, wind, gradient, tire resistance, and road surface.</p>
+  </div>
+
+  <div class="theme-toggle">
+    <button id="themeToggle" type="button">Toggle dark theme</button>
+    <button id="unitToggle" type="button" style="margin-left:12px;">Units: Metric</button>
+  </div>
+
+  </div>
 
 </div>
 
 <script>
-// compute air density from ambient temperature (°C)
+// compute air density from ambient temperature (°C) and altitude (m)
 function getAirDensity(){
   const tEl = document.getElementById('tempC');
+  const aEl = document.getElementById('altitudeM');
   const t = tEl ? parseFloat(tEl.value) : 15;
+  let altitude = aEl ? parseFloat(aEl.value) : 0;
+  const units = localStorage.getItem('units') || 'metric';
+  if(units === 'imperial'){
+    // altitude input in ft — convert to meters
+    altitude = (isFinite(altitude) ? altitude : 0) / 3.28084;
+  }
   if(!isFinite(t)) return 1.225;
-  // ideal gas law approximation at standard pressure (101325 Pa)
-  return 101325 / (287.05 * (t + 273.15));
+  const safeAlt = isFinite(altitude) ? altitude : 0;
+  const tempK = t + 273.15;
+  const pressurePa = 101325 * Math.exp(-safeAlt / 8500);
+  return pressurePa / (287.05 * tempK);
 }
 const RR = 0.005;
 const GRAVITY = 9.8;
 
-function powerNeeded(speed, gradient, mass, CdA, windMs = 0, rr = RR){
-  const relAir = speed + windMs;
+function powerNeeded(speed, gradient, mass, CdA, windSpeed = 0, windAngle = 0, rr = RR){
+  const angleRad = windAngle * Math.PI / 180;
+  const relAirX = speed + windSpeed * Math.cos(angleRad);
+  const relAirY = windSpeed * Math.sin(angleRad);
+  const relAir = Math.hypot(relAirX, relAirY);
   const rho = getAirDensity();
   const drag = 0.5 * rho * CdA * relAir * relAir;
   const rolling = rr * mass * GRAVITY;
@@ -252,26 +649,86 @@ function powerNeeded(speed, gradient, mass, CdA, windMs = 0, rr = RR){
   return (drag + rolling + gravityForce) * speed;
 }
 
-function speedForPower(watts, gradient, mass, CdA, windMs = 0, rr = RR){
+function speedForPower(watts, gradient, mass, CdA, windSpeed = 0, windAngle = 0, rr = RR, efficiency = 1){
   let lo = 0, hi = 35;
   for(let i=0;i<60;i++){
     const mid = (lo+hi)/2;
-    if(powerNeeded(mid, gradient, mass, CdA, windMs, rr) < watts) lo = mid; else hi = mid;
+    if(powerNeeded(mid, gradient, mass, CdA, windSpeed, windAngle, rr) < watts * efficiency) lo = mid; else hi = mid;
   }
   return (lo+hi)/2;
 }
 
-const wattsEl = document.getElementById('watts');
-const gradEl = document.getElementById('grad');
-const RmassEl = document.getElementById('Rmass');
-const BmassEl = document.getElementById('Bmass');
-const cdaEl = document.getElementById('cda');
-const tempEl = document.getElementById('tempC');
-const windEl = document.getElementById('wind');
-const windDirSelect = document.getElementById('windDirSelect');
-const tireTypeEl = document.getElementById('tireType');
-const customRREl = document.getElementById('customRR');
-const customRRField = document.getElementById('customRRField');
+let wattsEl, gradEl, RmassEl, BmassEl, cdaEl, customCdaEl, efficiencyEl, tempEl, altitudeEl, windEl, windAngleEl, tireTypeEl, roadTypeEl, customRREl, customRRField, customCdaField, themeToggle, unitToggle;
+
+function applyTheme(theme){
+  document.body.classList.toggle('dark-theme', theme === 'dark');
+  if(themeToggle){
+    themeToggle.textContent = theme === 'dark' ? 'Switch to light theme' : 'Toggle dark theme';
+  }
+}
+
+function initTheme(){
+  const savedTheme = localStorage.getItem('theme');
+  applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+}
+
+function initCalculator(){
+  wattsEl = document.getElementById('watts');
+  gradEl = document.getElementById('grad');
+  RmassEl = document.getElementById('Rmass');
+  BmassEl = document.getElementById('Bmass');
+  cdaEl = document.getElementById('cda');
+  customCdaEl = document.getElementById('customCda');
+  efficiencyEl = document.getElementById('efficiency');
+  tempEl = document.getElementById('tempC');
+  altitudeEl = document.getElementById('altitudeM');
+  windEl = document.getElementById('wind');
+  windAngleEl = document.getElementById('windAngle');
+  tireTypeEl = document.getElementById('tireType');
+  roadTypeEl = document.getElementById('roadType');
+  customRREl = document.getElementById('customRR');
+  customRRField = document.getElementById('customRRField');
+  customCdaField = document.getElementById('customCdaField');
+  themeToggle = document.getElementById('themeToggle');
+  unitToggle = document.getElementById('unitToggle');
+
+  function safeAddEvent(el, event, fn){ if(el) el.addEventListener(event, fn); }
+
+  function updateFlatWrapper(){ updateFlat(); }
+
+  [wattsEl, gradEl, RmassEl, BmassEl, windEl, windAngleEl, customRREl, tempEl, altitudeEl, roadTypeEl].forEach(el => safeAddEvent(el, 'input', updateFlatWrapper));
+  if(cdaEl){ safeAddEvent(cdaEl, 'change', () => { updateCdaUI(); updateFlat(); }); safeAddEvent(cdaEl, 'input', () => { updateCdaUI(); updateFlat(); }); }
+  if(customCdaEl){ safeAddEvent(customCdaEl, 'input', updateFlatWrapper); }
+  if(tireTypeEl){ safeAddEvent(tireTypeEl, 'change', () => { updateTireUI(); updateFlat(); }); safeAddEvent(tireTypeEl, 'input', () => { updateTireUI(); updateFlat(); }); }
+  safeAddEvent(windAngleEl, 'change', updateFlatWrapper);
+  safeAddEvent(windAngleEl, 'input', updateFlatWrapper);
+  safeAddEvent(tempEl, 'input', updateDensityDisplay);
+  safeAddEvent(altitudeEl, 'input', updateDensityDisplay);
+  if(unitToggle){ safeAddEvent(unitToggle, 'click', () => {
+    const current = localStorage.getItem('units') || 'metric';
+    const next = current === 'metric' ? 'imperial' : 'metric';
+    localStorage.setItem('units', next);
+    applyUnits(next, true);
+    updateFlat();
+  }); }
+  if(themeToggle){ safeAddEvent(themeToggle, 'click', () => {
+    const isDark = document.body.classList.contains('dark-theme');
+    const nextTheme = isDark ? 'light' : 'dark';
+    localStorage.setItem('theme', nextTheme);
+    applyTheme(nextTheme);
+  }); }
+
+  updateTireUI();
+  updateCdaUI();
+  // apply persisted units (don't convert values on first load)
+  const savedUnits = localStorage.getItem('units') || 'metric';
+  applyUnits(savedUnits, false);
+  updateFlat();
+  updateDensityDisplay();
+  initTheme();
+}
+
+document.addEventListener('DOMContentLoaded', initCalculator);
 
 function updateTireUI(){
   const t = tireTypeEl && tireTypeEl.value ? tireTypeEl.value : 'road';
@@ -286,66 +743,150 @@ function updateTireUI(){
   }
 }
 
+function getCdAValue(){
+  if(cdaEl && cdaEl.value === 'custom'){
+    return parseFloat(customCdaEl.value) || 0.35;
+  }
+  return parseFloat(cdaEl.value) || 0.35;
+}
+
+function updateCdaUI(){
+  if(customCdaEl && customCdaField){
+    if(cdaEl && cdaEl.value === 'custom'){
+      customCdaField.style.display = '';
+      customCdaEl.disabled = false;
+    } else {
+      customCdaField.style.display = 'none';
+      customCdaEl.disabled = true;
+    }
+  }
+}
+
+// Unit conversion helpers
+function toImperialSpeed(kph){ return kph / 1.609344; }
+function toMetricSpeed(mph){ return mph * 1.609344; }
+function toImperialLength(m){ return m * 3.28084; }
+function toMetricLength(ft){ return ft / 3.28084; }
+function toImperialMass(kg){ return kg * 2.2046226218; }
+function toMetricMass(lb){ return lb / 2.2046226218; }
+
+function applyUnits(units, convertValues){
+  if(unitToggle) unitToggle.textContent = 'Units: ' + (units === 'metric' ? 'Metric' : 'Imperial');
+  const windUnitSpan = document.querySelector('.wind-speed-input span');
+  if(windUnitSpan) windUnitSpan.textContent = units === 'metric' ? 'km/h' : 'mph';
+  const windValUnit = document.getElementById('windValUnit');
+  if(windValUnit) windValUnit.textContent = units === 'metric' ? 'km/h' : 'mph';
+  const rhoUnitEl = document.getElementById('rhoUnit');
+  if(rhoUnitEl) rhoUnitEl.textContent = units === 'metric' ? 'kg/m³' : 'lb/ft³';
+  if(altitudeEl){
+    const altLabel = altitudeEl.closest('.field') && altitudeEl.closest('.field').querySelector('label');
+    if(altLabel) altLabel.textContent = units === 'metric' ? 'Altitude (m)' : 'Altitude (ft)';
+  }
+  if(RmassEl){
+    const rLabel = RmassEl.closest('.field') && RmassEl.closest('.field').querySelector('label');
+    if(rLabel) rLabel.textContent = units === 'metric' ? 'Rider weight (kg)' : 'Rider weight (lb)';
+  }
+  if(BmassEl){
+    const bLabel = BmassEl.closest('.field') && BmassEl.closest('.field').querySelector('label');
+    if(bLabel) bLabel.textContent = units === 'metric' ? 'Bike weight (kg)' : 'Bike weight (lb)';
+  }
+  const statLabels = document.querySelectorAll('.stat .label');
+  if(statLabels && statLabels.length >= 2){
+    statLabels[0].textContent = units === 'metric' ? 'km/h' : 'mph';
+    statLabels[1].textContent = units === 'metric' ? 'mph' : 'km/h';
+  }
+  if(convertValues){
+    if(units === 'imperial'){
+      if(RmassEl) RmassEl.value = (toImperialMass(parseFloat(RmassEl.value) || 0)).toFixed(1);
+      if(BmassEl) BmassEl.value = (toImperialMass(parseFloat(BmassEl.value) || 0)).toFixed(1);
+      if(altitudeEl) altitudeEl.value = Math.round(toImperialLength(parseFloat(altitudeEl.value) || 0));
+      if(windEl) windEl.value = Math.round(toImperialSpeed(parseFloat(windEl.value) || 0));
+    } else {
+      if(RmassEl) RmassEl.value = (toMetricMass(parseFloat(RmassEl.value) || 0)).toFixed(1);
+      if(BmassEl) BmassEl.value = (toMetricMass(parseFloat(BmassEl.value) || 0)).toFixed(1);
+      if(altitudeEl) altitudeEl.value = Math.round(toMetricLength(parseFloat(altitudeEl.value) || 0));
+      if(windEl) windEl.value = Math.round(toMetricSpeed(parseFloat(windEl.value) || 0));
+    }
+  }
+  localStorage.setItem('units', units);
+}
+
 function updateFlat(){
   const watts = parseFloat(wattsEl.value);
   const gradPct = parseFloat(gradEl.value);
-  const rider = parseFloat(RmassEl.value) || 0;
-  const bike = parseFloat(BmassEl.value) || 0;
+  const units = localStorage.getItem('units') || 'metric';
+
+  // read raw values, then normalize to SI (kg, m/s, m) based on current unit mode
+  let rider = parseFloat(RmassEl.value) || 0;
+  let bike = parseFloat(BmassEl.value) || 0;
+  let wind = parseFloat(windEl.value) || 0;
+  if(units === 'imperial'){
+    rider = toMetricMass(rider);
+    bike = toMetricMass(bike);
+    wind = toMetricSpeed(wind);
+  }
   const mass = (rider + bike) || 90;
-  const CdA = parseFloat(cdaEl.value) || 0.35;
+  const CdA = getCdAValue();
+  const efficiency = (parseFloat(efficiencyEl.value) || 97) / 100;
 
   document.getElementById('wattsVal').textContent = watts;
   document.getElementById('gradVal').textContent = gradPct.toFixed(1);
-  const wind = parseFloat(windEl.value) || 0;
-  document.getElementById('windVal').textContent = wind;
-  const windDir = windDirSelect.value;
-  const windMs = (windDir === 'Headwind' ? wind : -wind) / 3.6;
+  // display value stays in whatever unit is currently shown to the user
+  document.getElementById('windVal').textContent = parseFloat(windEl.value) || 0;
+  const windAngle = parseFloat(windAngleEl.value) || 0;
+  const windArrow = document.getElementById('windArrow');
+  if(windArrow){
+    windArrow.style.transform = `translateX(-50%) rotate(${windAngle}deg)`;
+  }
+  document.getElementById('windAngleVal').textContent = windAngle === 0 ? '0° headwind' : windAngle === 180 ? '180° tailwind' : windAngle === 90 ? '90° crosswind' : windAngle + '°';
+  const windMs = wind / 3.6; // wind is now normalized to km/h (metric) at this point
 
   // determine rolling resistance from tire selection
   let rr = RR;
   const t = (tireTypeEl && tireTypeEl.value) ? tireTypeEl.value : 'road';
-  if(t === 'road') rr = 0.005;
-  else if(t === 'gravel') rr = 0.01;
-  else if(t === 'mtb') rr = 0.015;
-  else if(t === 'tt') rr = 0.004;
+  if(t === 'road') rr = 0.0038;
+  else if(t === 'gravel') rr = 0.0050;
+  else if(t === 'mtb') rr = 0.0068;
+  else if(t === 'tt') rr = 0.0025;
   else if(t === 'custom') rr = parseFloat(customRREl.value) || RR;
+  const roadFactor = roadTypeEl ? parseFloat(roadTypeEl.value) || 1 : 1;
+  rr *= roadFactor;
 
-  const speed = speedForPower(watts, gradPct/100, mass, CdA, windMs, rr);
+  const speed = speedForPower(watts, gradPct/100, mass, CdA, windMs, windAngle, rr, efficiency);
   const kph = speed * 3.6;
   const mph = speed * 2.237;
-
   if(!isFinite(kph)){
     document.getElementById('kphOut').textContent = '—';
     document.getElementById('mphOut').textContent = '—';
   } else {
-    document.getElementById('kphOut').textContent = kph.toFixed(1);
-    document.getElementById('mphOut').textContent = mph.toFixed(1);
+    if(units === 'metric'){
+      document.getElementById('kphOut').textContent = kph.toFixed(1);
+      document.getElementById('mphOut').textContent = mph.toFixed(1);
+    } else {
+      // show primary in mph (kphOut slot) and secondary in km/h (mphOut slot)
+      document.getElementById('kphOut').textContent = mph.toFixed(1);
+      document.getElementById('mphOut').textContent = kph.toFixed(1);
+    }
   }
+  // watts/kg should use the rider's mass in kg regardless of display units
   document.getElementById('wkgOut').textContent = (rider > 0 && isFinite(watts/rider)) ? (watts/rider).toFixed(2) : '—';
-}
-// wire inputs
-[wattsEl, gradEl, RmassEl, BmassEl, cdaEl, windEl, customRREl, tempEl].forEach(el =>
-  el && el.addEventListener('input', updateFlat)
-);
-if(tireTypeEl){
-  tireTypeEl.addEventListener('change', () => { updateTireUI(); updateFlat(); });
-  tireTypeEl.addEventListener('input', () => { updateTireUI(); updateFlat(); });
+  updateDensityDisplay();
 }
 
-// initialize tire UI
-updateTireUI();
-windDirSelect.addEventListener('change', updateFlat);
-windDirSelect.addEventListener('input', updateFlat);
-updateFlat();
 // update displayed air density whenever UI changes
 function updateDensityDisplay(){
   const rhoEl = document.getElementById('rhoReadout');
-  if(rhoEl) rhoEl.textContent = getAirDensity().toFixed(3);
+  if(!rhoEl) return;
+  const units = localStorage.getItem('units') || 'metric';
+  const rhoKgM3 = getAirDensity();
+  if(units === 'imperial'){
+    const rhoLbFt3 = rhoKgM3 * 0.06242796;
+    rhoEl.textContent = rhoLbFt3.toFixed(4);
+  } else {
+    rhoEl.textContent = rhoKgM3.toFixed(3);
+  }
 }
-updateDensityDisplay();
-
-// also refresh density on temp changes
-if(tempEl) tempEl.addEventListener('input', () => { updateDensityDisplay(); });
 </script>
 </body>
 </html>
+
