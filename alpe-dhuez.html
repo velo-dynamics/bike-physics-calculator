@@ -26,6 +26,23 @@
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;margin-bottom:28px}
   .panel h2{font-family:'JetBrains Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 22px;display:flex;align-items:center;gap:10px}
   .panel h2::after{content:"";flex:1;height:1px;background:var(--line)}
+  body.dark-theme{
+    --bg: #0f1722;
+    --surface: #182332;
+    --surface-2: #253447;
+    --line: #4a5a6b;
+    --text: #f3f7fb;
+    --muted: #d7e2ee;
+    --amber: #5bd98f;
+  }
+  body.dark-theme input[type=number], body.dark-theme select{
+    background:#f8fafc;
+    color:#111827;
+    border-color:var(--line);
+  }
+  .theme-toggle{margin-top:24px;display:flex;justify-content:center}
+  .theme-toggle button{border:1px solid var(--line);background:var(--surface);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 14px;border-radius:999px;cursor:pointer}
+  .theme-toggle button:hover{opacity:.9}
   .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted);margin-bottom:8px}
   .field label b{font-family:'JetBrains Mono',monospace;color:var(--text);font-size:16px;font-weight:600}
   input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:var(--surface-2);outline:none}
@@ -123,6 +140,9 @@
       </div>
     </div>
   </div>
+  <div class="theme-toggle">
+    <button id="themeToggle" type="button">Toggle dark theme</button>
+  </div>
 </div>
 
 <script>
@@ -155,10 +175,10 @@ function speedForPower(watts, gradient, mass, CdA, windMs = 0, rr = RR){
 }
 
 const segments = [
-  [0.0, 0.9, 11.0], [0.9, 1.7, 10.5], [1.7, 2.6, 9.0], [2.6, 3.4, 8.0],
-  [3.4, 4.2, 7.9], [4.2, 5.0, 7.8], [5.0, 5.9, 7.5], [5.9, 6.6, 7.9],
-  [6.6, 7.4, 7.4], [7.4, 8.3, 7.9], [8.3, 9.1, 8.5], [9.1, 10.0, 10.0],
-  [10.0, 10.8, 9.0], [10.8, 11.6, 5.0], [11.6, 12.4, 5.0], [12.4, 13.2, 4.1],
+  [0.0, 0.9, 11.0], [0.9, 1.7, 10.9], [1.7, 2.6, 9.8], [2.6, 3.4, 8.7],
+  [3.4, 4.2, 7.9], [4.2, 5.0, 7.8], [5.0, 5.9, 7.7], [5.9, 6.6, 7.8],
+  [6.6, 7.4, 7.5], [7.4, 8.3, 7.6], [8.3, 9.1, 8.4], [9.1, 10.0, 10.0],
+  [10.0, 10.8, 9.0], [10.8, 11.6, 5.0], [11.6, 12.4, 5.1], [12.4, 13.2, 4.2],
   [13.2, 13.8, 2.0]
 ];
 
@@ -219,10 +239,10 @@ function updateClimb(){
     // rolling resistance based on tire selection
     let rr = RR;
     const t = (tireTypeEl && tireTypeEl.value) ? tireTypeEl.value : 'road';
-    if(t === 'road') rr = 0.005;
-    else if(t === 'gravel') rr = 0.01;
-    else if(t === 'mtb') rr = 0.015;
-    else if(t === 'tt') rr = 0.004;
+    if(t === 'road') rr = 0.0038;
+    else if(t === 'gravel') rr = 0.0050;
+    else if(t === 'mtb') rr = 0.0068;
+    else if(t === 'tt') rr = 0.0025;
     else if(t === 'custom') rr = parseFloat(customRREl.value) || RR;
 
     const speed = speedForPower(watts, pct/100, mass, CdA, 0, rr);
@@ -256,6 +276,19 @@ function updateClimb(){
   }
 }
   const tempEl = document.getElementById('tempC');
+  const themeToggle = document.getElementById('themeToggle');
+
+  function applyTheme(theme){
+    document.body.classList.toggle('dark-theme', theme === 'dark');
+    if(themeToggle){
+      themeToggle.textContent = theme === 'dark' ? 'Switch to light theme' : 'Toggle dark theme';
+    }
+  }
+
+  function initTheme(){
+    const savedTheme = localStorage.getItem('theme');
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+  }
   tireTypeEl.addEventListener('input', () => { updateTireUI(); updateClimb(); });
   tireTypeEl.addEventListener('change', () => { updateTireUI(); updateClimb(); });
   climbWattsEl.addEventListener('input', updateClimb);
@@ -268,6 +301,16 @@ function updateClimb(){
   updateTireUI();
   document.getElementById('rhoVal').textContent = getAirDensity().toFixed(3);
   updateClimb();
+  if(themeToggle){
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.contains('dark-theme');
+      const nextTheme = isDark ? 'light' : 'dark';
+      localStorage.setItem('theme', nextTheme);
+      applyTheme(nextTheme);
+    });
+  }
+
+  initTheme();
 </script>
 </body>
 </html>
